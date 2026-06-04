@@ -155,12 +155,12 @@ class _CardBuilder:
         tk.Label(self._frame, text=title,
                  bg=BG_CARD, fg=TEXT_MAIN,
                  font=(FONT_FAMILY, 12, "bold"),
-                 anchor="w", padx=14, pady=(10 if not hint else 8)).pack(fill="x")
+                 anchor="w", padx=14).pack(fill="x", pady=(8, 0))
         if hint:
             tk.Label(self._frame, text=hint,
                      bg=BG_CARD, fg=TEXT_SEC,
                      font=(FONT_FAMILY, 10, "italic"),
-                     anchor="w", padx=14, pady=(0, 6),
+                     anchor="w", padx=14,
                      wraplength=700).pack(fill="x")
 
         self._inner = tk.Frame(self._frame, bg=BG_CARD)
