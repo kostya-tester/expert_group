@@ -1,0 +1,116 @@
+name: Build NK Expert System
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ created ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --noconfirm --onedir --windowed --name "NK_Expert_System" `
+            --add-data "assets;assets" `
+            --add-data "app;app" `
+            main.py
+
+      - name: Package release (zip)
+        run: |
+          Compress-Archive -Path dist\NK_Expert_System\* `
+            -DestinationPath NK_Expert_System_Windows.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NK_Expert_System_Windows
+          path: NK_Expert_System_Windows.zip
+          retention-days: 30
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk tk-dev
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --noconfirm --onedir --windowed --name "NK_Expert_System" \
+            --add-data "assets:assets" \
+            --add-data "app:app" \
+            main.py
+
+      - name: Package release (tar.gz)
+        run: |
+          tar -czf NK_Expert_System_Linux.tar.gz -C dist NK_Expert_System
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NK_Expert_System_Linux
+          path: NK_Expert_System_Linux.tar.gz
+          retention-days: 30
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --noconfirm --onedir --windowed --name "NK_Expert_System" \
+            --add-data "assets:assets" \
+            --add-data "app:app" \
+            main.py
+
+      - name: Package release (zip)
+        run: |
+          zip -r NK_Expert_System_macOS.zip dist/NK_Expert_System
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NK_Expert_System_macOS
+          path: NK_Expert_System_macOS.zip
+          retention-days: 30
